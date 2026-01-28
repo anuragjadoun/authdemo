@@ -11,15 +11,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AuthController {
 
-    @GetMapping("/login-success")
-    public Map<String, Object> loginSuccess(@AuthenticationPrincipal OAuth2User oauthUser) {
+    @GetMapping("/me")
+    public Map<String, Object> me(@AuthenticationPrincipal OAuth2User user) {
+        Map<String, Object> data = new HashMap<>();
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", "OAuth Login Successful ");
-        response.put("email", oauthUser.getAttribute("email"));
-        response.put("name", oauthUser.getAttribute("name"));
-        response.put("picture", oauthUser.getAttribute("picture"));
+        if (user == null) {
+            data.put("authenticated", false);
+            return data;
+        }
 
-        return response;
+        data.put("authenticated", true);
+        data.put("name", user.getAttribute("name"));
+        data.put("email", user.getAttribute("email"));
+        data.put("picture", user.getAttribute("picture"));
+
+        return data;
     }
 }
