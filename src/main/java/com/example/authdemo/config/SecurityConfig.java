@@ -28,7 +28,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             .oauth2Login(oauth -> oauth
-                // 🔥 FRONTEND DASHBOARD (NOT BACKEND)
+                // ✅ REDIRECT TO FRONTEND DASHBOARD
                 .defaultSuccessUrl(
                     "https://yoursecurenotevault-app.netlify.app/dashboard",
                     true
@@ -60,7 +60,8 @@ public class SecurityConfig {
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
     }
