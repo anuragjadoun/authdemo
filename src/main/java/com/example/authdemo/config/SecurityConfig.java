@@ -28,15 +28,15 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             .oauth2Login(oauth -> oauth
-                // ✅ REDIRECT TO FRONTEND DASHBOARD
+                //  REDIRECT TO FRONTEND DASHBOARD
                 .defaultSuccessUrl(
-                    "FRONTEND_URL/dashboard",
+                    "/dashboard",
                     true
                 )
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("FRONTEND_URL")
+                .logoutSuccessUrl("/")
                 .invalidateHttpSession(true)
                 .clearAuthentication(true)
                 .deleteCookies("JSESSIONID")
@@ -53,7 +53,7 @@ public class SecurityConfig {
 
         config.setAllowedOrigins(List.of(
             "http://localhost:5173",
-            "FRONTEND_URL"
+            "https://yoursecurenotevaultapp.netlify.app"
         ));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
