@@ -9,6 +9,12 @@ server:
    # password: anuragjadoun024@gmail
     #driver-class-name: com.mysql.cj.jdbc.Driver
 
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:	
   jpa:
     hibernate:
       ddl-auto: update
