@@ -30,13 +30,13 @@ public class SecurityConfig {
             .oauth2Login(oauth -> oauth
                 //  REDIRECT TO FRONTEND DASHBOARD
                 .defaultSuccessUrl(
-                    "/dashboard",
+                    "https://yoursecurenotevaultapp.netlify.app/dashboard",
                     true
                 )
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/")
+                .logoutSuccessUrl("https://yoursecurenotevaultapp.netlify.app")
                 .invalidateHttpSession(true)
                 .clearAuthentication(true)
                 .deleteCookies("JSESSIONID")
