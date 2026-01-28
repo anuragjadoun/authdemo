@@ -13,36 +13,49 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 public class SecurityConfig {
 
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-	    http
-	        .csrf(csrf -> csrf.disable())
-	        .authorizeHttpRequests(auth -> auth
-	            .requestMatchers("/", "/login").permitAll()
-	            .anyRequest().authenticated()
-	        )
-	        .oauth2Login(oauth -> oauth
-	            .defaultSuccessUrl("http://localhost:5173/dashboard", true)
-	        )
-	        .logout(logout -> logout
-	            .logoutSuccessUrl("http://localhost:5173") // 👈 THIS LINE
-	            .invalidateHttpSession(true)
-	            .clearAuthentication(true)
-	            .deleteCookies("JSESSIONID")
-	        )
-	        .cors(cors -> {});
+        http
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                //  PUBLIC ENDPOINTS
+                .requestMatchers(
+                    "/",
+                    "/login",
+                    "/login/**",
+                    "/oauth2/**"
+                ).permitAll()
+                //  EVERYTHING ELSE PROTECTED
+                .anyRequest().authenticated()
+            )
+            .oauth2Login(oauth -> oauth
+                //  BACKEND SUCCESS ENDPOINT
+                .defaultSuccessUrl("/login-success", true)
+            )
+            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/")
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .deleteCookies("JSESSIONID")
+            )
+            .cors(cors -> {});
 
-	    return http.build();
-	}
+        return http.build();
+    }
 
-
-    
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173"));
+
+        //  LOCAL + RENDER (safe)
+        config.setAllowedOrigins(List.of(
+            "http://localhost:5173",
+            "https://authdemo-backend.onrender.com"
+        ));
+
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
