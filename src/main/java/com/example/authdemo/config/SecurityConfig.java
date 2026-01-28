@@ -19,23 +19,23 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                //  PUBLIC ENDPOINTS
                 .requestMatchers(
                     "/",
                     "/login",
                     "/login/**",
                     "/oauth2/**"
                 ).permitAll()
-                //  EVERYTHING ELSE PROTECTED
                 .anyRequest().authenticated()
             )
             .oauth2Login(oauth -> oauth
-                //  BACKEND SUCCESS ENDPOINT
-                .defaultSuccessUrl("/login-success", true)
+                .defaultSuccessUrl(
+                    "https://yoursecurenotevault-app.netlify.app/dashboard",
+                    true
+                )
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/")
+                .logoutSuccessUrl("https://yoursecurenotevault-app.netlify.app")
                 .invalidateHttpSession(true)
                 .clearAuthentication(true)
                 .deleteCookies("JSESSIONID")
@@ -49,13 +49,10 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration config = new CorsConfiguration();
-
-        //  LOCAL + RENDER (safe)
         config.setAllowedOrigins(List.of(
             "http://localhost:5173",
-            "https://authdemo-backend.onrender.com"
+            "https://yoursecurenotevault-app.netlify.app"
         ));
-
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
