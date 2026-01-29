@@ -10,6 +10,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.example.authdemo.security.HttpCookieOAuth2AuthorizationRequestRepository;
+
 @Configuration
 public class SecurityConfig {
 
@@ -18,6 +20,7 @@ public class SecurityConfig {
 
         http
             .csrf(csrf -> csrf.disable())
+
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                     "/",
@@ -27,13 +30,20 @@ public class SecurityConfig {
                 ).permitAll()
                 .anyRequest().authenticated()
             )
+
+            //  ONLY REAL FIX IS HERE
             .oauth2Login(oauth -> oauth
-                //  REDIRECT TO FRONTEND DASHBOARD
+                .authorizationEndpoint(auth -> auth
+                    .authorizationRequestRepository(
+                        new HttpCookieOAuth2AuthorizationRequestRepository()
+                    )
+                )
                 .defaultSuccessUrl(
                     "https://yoursecurenotevaultapp.netlify.app/dashboard",
                     true
                 )
             )
+
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("https://yoursecurenotevaultapp.netlify.app")
@@ -41,6 +51,7 @@ public class SecurityConfig {
                 .clearAuthentication(true)
                 .deleteCookies("JSESSIONID")
             )
+
             .cors(cors -> {});
 
         return http.build();
