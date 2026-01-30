@@ -38,20 +38,19 @@ public class NoteController {
         return noteRepository.findByUser(user);
     }
 
-    //  ADD NOTE
+    
+ // ADD NOTE (JSON BODY)
     @PostMapping
-    public Note addNote(@RequestBody String content,
+    public Note addNote(@RequestBody Note note,
                         @AuthenticationPrincipal OAuth2User oauthUser) {
 
         String email = oauthUser.getAttribute("email");
         User user = userRepository.findByEmail(email).orElseThrow();
 
-        Note note = new Note();
-        note.setContent(content);
-        note.setUser(user);
-
+        note.setUser(user);   // link note with logged-in user
         return noteRepository.save(note);
     }
+
 
     //  DELETE NOTE (ONLY OWNER)
     @DeleteMapping("/{id}")
