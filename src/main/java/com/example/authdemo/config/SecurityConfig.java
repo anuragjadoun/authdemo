@@ -19,7 +19,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
+            // ✅ CSRF OFF (SPA + OAuth)
             .csrf(csrf -> csrf.disable())
+
+            // ✅ CORS ENABLED HERE ONLY
+            .cors(cors -> {})
 
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
@@ -31,7 +35,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
 
-            //  ONLY REAL FIX IS HERE
+            // ✅ OAUTH FIX (COOKIE BASED)
             .oauth2Login(oauth -> oauth
                 .authorizationEndpoint(auth -> auth
                     .authorizationRequestRepository(
@@ -44,19 +48,21 @@ public class SecurityConfig {
                 )
             )
 
+            // ✅ LOGOUT FIX (NO REDIRECT, JUST 200 OK)
             .logout(logout -> logout
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("https://yoursecurenotevaultapp.netlify.app")
+                .logoutSuccessHandler((req, res, auth) -> {
+                    res.setStatus(200);
+                })
                 .invalidateHttpSession(true)
                 .clearAuthentication(true)
                 .deleteCookies("JSESSIONID")
-            )
-
-            .cors(cors -> {});
+            );
 
         return http.build();
     }
 
+    // 🔥 SINGLE SOURCE OF TRUTH FOR CORS
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
@@ -67,13 +73,17 @@ public class SecurityConfig {
             "https://yoursecurenotevaultapp.netlify.app"
         ));
 
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        config.setAllowedMethods(List.of(
+            "GET", "POST", "PUT", "DELETE", "OPTIONS"
+        ));
+
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
+
         return source;
     }
 }
