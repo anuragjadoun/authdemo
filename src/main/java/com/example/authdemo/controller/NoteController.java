@@ -40,19 +40,25 @@ public class NoteController {
 
     
  // ADD NOTE (JSON BODY)
-    @PostMapping(consumes = "text/plain")
-    public Note addNote(@RequestBody String content,
+    @PostMapping
+    public Note addNote(@RequestBody Note incomingNote,
                         @AuthenticationPrincipal OAuth2User oauthUser) {
 
+        if (oauthUser == null) {
+            throw new RuntimeException("User not authenticated");
+        }
+
         String email = oauthUser.getAttribute("email");
-        User user = userRepository.findByEmail(email).orElseThrow();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         Note note = new Note();
-        note.setContent(content);
+        note.setContent(incomingNote.getContent()); //  ONLY CONTENT
         note.setUser(user);
 
         return noteRepository.save(note);
     }
+
 
 
 
