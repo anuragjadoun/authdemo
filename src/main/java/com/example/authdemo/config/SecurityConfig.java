@@ -9,6 +9,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.security.config.http.SessionCreationPolicy;
 
 import com.example.authdemo.security.HttpCookieOAuth2AuthorizationRequestRepository;
 
@@ -21,6 +22,9 @@ public class SecurityConfig {
         http
             // ✅ CSRF OFF (SPA + OAuth)
             .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session
+                    .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+                )
 
             // ✅ CORS ENABLED HERE ONLY
             .cors(cors -> {})
